@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import UserFile from '../models/userFileSchema';
+import RareData from '../lib/RareData';
 
 const UserFileController = {
   /**
@@ -9,7 +10,9 @@ const UserFileController = {
    */
   async createFile(req: Request, res: Response) {
     const file_url = req.file?.filename;
-    
+
+    // const encryptedFile = RareData.encryptData(req.body.user_id, file_url);
+
     const newFile = new UserFile({ ...req.body, file_url });
 
     try {
@@ -41,6 +44,9 @@ const UserFileController = {
     try {
       const user_files = await UserFile.find({ user_id });
 
+      /**
+       * TODO: decrypt file data here
+       */
       return res.status(200).json({
         status: true,
         message: "Successfully retrieved users' files",
@@ -60,6 +66,8 @@ const UserFileController = {
     try {
       const user_file = await UserFile.findOne({ file_url });
 
+      // const file = RareData.decryptData(user_id, user_file?.file_url)
+      
       return res.status(200).json({
         status: true,
         message: "Successfully retrieved file",
