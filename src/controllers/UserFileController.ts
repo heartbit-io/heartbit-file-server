@@ -34,11 +34,7 @@ const UserFileController = {
           new FormatResponse(true, 201, 'File created successfully', result)
         );
     } catch (error) {
-      return res.status(400).json({
-        status: false,
-        message: error,
-        data: null
-      });
+      return res.status(400).json(new FormatResponse(false, 400, error, null));
     }
   },
 
@@ -72,23 +68,25 @@ const UserFileController = {
   },
 
   async getUserFile(req: Request, res: Response) {
-    const { file_url } = req.params;
+    const { id } = req.params;
 
     try {
-      const user_file = await UserFile.findOne({ file_url });
+      const user_file = await UserFile.findById(id);
 
       // const file = RareData.decryptData(user_id, user_file?.file_url)
 
-      return res.status(200).json({
-        status: true,
-        message: 'Successfully retrieved file',
-        data: user_file
-      });
+      return res
+        .status(200)
+        .json(
+          new FormatResponse(
+            true,
+            200,
+            'successfully retrieved file',
+            user_file
+          )
+        );
     } catch (error) {
-      return res.status(400).json({
-        status: false,
-        message: error
-      });
+      return res.status(400).json(new FormatResponse(false, 400, error, null));
     }
   },
 
@@ -102,24 +100,36 @@ const UserFileController = {
     req: Request,
     res: Response
   ): Promise<Response<ResponseFormat>> {
-    const { file_url } = req.params;
+    const { id } = req.params;
 
     try {
-      await UserFile.deleteOne({ file_url });
+      const delete_status = await UserFile.findByIdAndDelete(id);
 
-      return res
-        .status(200)
-        .json({
-          status: true,
-          statusCode: 200,
-          message: `fiel ${file_url} deleted successfully`,
-          data: null
-        });
+      if (delete_status) {
+        return res
+          .status(200)
+          .json(
+            new FormatResponse(
+              true,
+              200,
+              `file ${id} deleted successfully`,
+              null
+            )
+          );
+      } else {
+        return res
+          .status(404)
+          .json(
+            new FormatResponse(
+              false,
+              404,
+              `file ${id} does not exist`,
+              null
+            )
+          );
+      }
     } catch (error) {
-      return res.status(400).json({
-        status: false,
-        message: error
-      });
+      return res.status(400).json(new FormatResponse(false, 400, error, null));
     }
   }
 };

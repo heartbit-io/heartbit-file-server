@@ -4,11 +4,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { routes } from './routes';
 import dbconnection from './util/dbconnection';
-import { log } from 'console';
+import { log, error } from 'console';
 
 dotenv.config();
 
 if (!process.env.PORT) {
+  error('PORT is not set');
   process.exit(1);
 }
 

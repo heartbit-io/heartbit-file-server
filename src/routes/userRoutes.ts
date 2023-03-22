@@ -8,11 +8,11 @@ const router = express.Router();
 
 router.post('/create', upload.single('file'), validator(newFile),  UserFileController.createFile);
 
-router.get('/files/:file_url', UserFileController.getUserFile);
+router.get('/files/:id', UserFileController.getUserFile);
 
 router.get('/:user_id', UserFileController.getUserFiles);
 
-router.delete('/:file_url', UserFileController.deleteFile);
+router.delete('/:id', UserFileController.deleteFile);
 
 
 export { router as userRoutes };

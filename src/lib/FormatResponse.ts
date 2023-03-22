@@ -9,7 +9,7 @@ class FormatResponse {
    * @param {string} message addition message
    * @param {object} data response data
    */
-  constructor(success: boolean, statusCode: number, message: string, data: object) {
+  constructor(success: boolean, statusCode: number, message: string | any, data: object | null) {
     this.success = success;
     this.statusCode = statusCode;
     this.message = message;
