@@ -1,7 +1,7 @@
 {
-  "name": "file-server",
+  "name": "heartbit-wallet-server",
   "version": "1.0.0",
-  "description": "file server for Heartbit",
+  "description": "Heartbit wallet server",
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
