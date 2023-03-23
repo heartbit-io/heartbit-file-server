@@ -1,6 +1,8 @@
+import { HttpCode } from "../util/httpCode";
+
 class FormatResponse {
   success: boolean;
-  statusCode: number;
+  statusCode: HttpCode;
   message: string;
   data:  null | object;
   /**
@@ -9,7 +11,7 @@ class FormatResponse {
    * @param {string} message addition message
    * @param {object} data response data
    */
-  constructor(success: boolean, statusCode: number, message: string | any, data: object | null) {
+  constructor(success: boolean, statusCode: HttpCode, message: string | any, data: object | null) {
     this.success = success;
     this.statusCode = statusCode;
     this.message = message;

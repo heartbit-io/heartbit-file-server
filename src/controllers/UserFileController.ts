@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import UserFile from '../models/userFileSchema';
 import RareData from '../lib/RareData';
 import FormatResponse from '../lib/FormatResponse';
+import { HttpCode } from '../util/httpCode';
 
 export interface ResponseFormat {
   status: boolean;
@@ -29,12 +30,19 @@ const UserFileController = {
       const result = await newFile.save();
 
       return res
-        .status(201)
+        .status(HttpCode.CREATED)
         .json(
-          new FormatResponse(true, 201, 'File created successfully', result)
+          new FormatResponse(
+            true,
+            HttpCode.CREATED,
+            'File created successfully',
+            result
+          )
         );
     } catch (error) {
-      return res.status(400).json(new FormatResponse(false, 400, error, null));
+      return res
+        .status(HttpCode.BAD_REQUEST)
+        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
     }
   },
 
@@ -57,13 +65,14 @@ const UserFileController = {
        * TODO: decrypt file data here
        */
       return res
-        .status(200)
-        .json(new FormatResponse(true, 200, 'All user files', user_files));
+        .status(HttpCode.OK)
+        .json(
+          new FormatResponse(true, HttpCode.OK, 'All user files', user_files)
+        );
     } catch (error) {
-      return res.status(400).json({
-        status: false,
-        message: error
-      });
+      return res
+        .status(HttpCode.BAD_REQUEST)
+        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
     }
   },
 
@@ -76,17 +85,19 @@ const UserFileController = {
       // const file = RareData.decryptData(user_id, user_file?.file_url)
 
       return res
-        .status(200)
+        .status(HttpCode.OK)
         .json(
           new FormatResponse(
             true,
-            200,
+            HttpCode.OK,
             'successfully retrieved file',
             user_file
           )
         );
     } catch (error) {
-      return res.status(400).json(new FormatResponse(false, 400, error, null));
+      return res
+        .status(HttpCode.BAD_REQUEST)
+        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
     }
   },
 
@@ -107,29 +118,24 @@ const UserFileController = {
 
       if (delete_status) {
         return res
-          .status(200)
+          .status(HttpCode.OK)
           .json(
             new FormatResponse(
               true,
-              200,
+              HttpCode.OK,
               `file ${id} deleted successfully`,
               null
             )
           );
       } else {
         return res
-          .status(404)
+          .status(HttpCode.NOT_FOUND)
           .json(
-            new FormatResponse(
-              false,
-              404,
-              `file ${id} does not exist`,
-              null
-            )
+            new FormatResponse(false, HttpCode.NOT_FOUND, `file ${id} does not exist`, null)
           );
       }
     } catch (error) {
-      return res.status(400).json(new FormatResponse(false, 400, error, null));
+      return res.status(HttpCode.BAD_REQUEST).json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
     }
   }
 };
