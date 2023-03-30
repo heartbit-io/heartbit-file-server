@@ -1,17 +1,19 @@
 import { log, error } from 'console';
-import mongoose, { Error } from 'mongoose';
+import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 const db_url = process.env.DB_URL;
 
+mongoose.Promise = global.Promise;
+
 if (!db_url) {
   error(`The database connection is not set`);
   process.exit(1);
 }
 
-const dbconnection = async () => {
+const dbconnection = async (): Promise<void> => {
   try {
       await mongoose.connect(db_url);
       log('connected to database successfully');

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { routes } from './routes';
 import dbconnection from './util/dbconnection';
 import { log, error } from 'console';
+import { HttpCode } from './util/httpCode';
 
 dotenv.config();
 
@@ -17,8 +18,7 @@ const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
 
-//database connection
-dbconnection();
+
 
 app.use(helmet());
 app.use(cors());
@@ -39,12 +39,13 @@ app.use(routes);
 
 // UnKnown Routes
 app.all('*', (req: Request, res: Response) => {
-  return res.status(404).json({
+  return res.status(HttpCode.NOT_FOUND).json({
     status: false,
     message: `Route ${req.originalUrl} not found`
   });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  await dbconnection();
   log(`Listening on port ${PORT}`);
 });

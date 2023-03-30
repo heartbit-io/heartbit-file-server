@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import UserFile from '../models/userFileSchema';
+import UserFile from '../models/UserFileSchema';
 import RareData from '../lib/RareData';
 import FormatResponse from '../lib/FormatResponse';
 import { HttpCode } from '../util/httpCode';
+import FileChecks from '../lib/FileChecks';
+import { unlink } from 'fs';
 
 export interface ResponseFormat {
   status: boolean;
@@ -20,13 +22,45 @@ const UserFileController = {
     req: Request,
     res: Response
   ): Promise<Response<ResponseFormat>> {
-    const file_url = req.file?.filename;
-
-    // const encryptedFile = RareData.encryptData(req.body.user_id, file_url);
-
-    const newFile = new UserFile({ ...req.body, file_url });
 
     try {
+      if (!req.file) {
+        return res
+          .status(HttpCode.BAD_REQUEST)
+          .json(
+            new FormatResponse(
+              true,
+              HttpCode.BAD_REQUEST,
+              'Select file to upload',
+              null
+            )
+          );
+      }
+
+      const file: Express.Multer.File = req.file;
+
+      const file_checks = new FileChecks(file);
+
+      const file_type_status: boolean = file_checks.checkFileType();
+      const file_size_status: boolean = file_checks.checkFileSize();
+
+      if (!file_type_status || !file_size_status ) {
+        unlink(file.path, () => { return; });
+        return res
+          .status(HttpCode.BAD_REQUEST)
+          .json(
+            new FormatResponse(
+              true,
+              HttpCode.BAD_REQUEST,
+              'Only images and pdf files are permitted with maximum file size of 1MB',
+              null
+            )
+          );
+      }
+      // const encryptedFile = RareData.encryptData(req.body.user_id, file_url);
+
+      const newFile = new UserFile({ ...req.body, file_url: file.path });
+
       const result = await newFile.save();
 
       return res
@@ -35,14 +69,14 @@ const UserFileController = {
           new FormatResponse(
             true,
             HttpCode.CREATED,
-            'File created successfully',
+            'User file saved successfully',
             result
           )
         );
-    } catch (error) {
+    } catch (e) {
       return res
-        .status(HttpCode.BAD_REQUEST)
-        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
+        .status(422)
+        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, e, null));
     }
   },
 
@@ -131,11 +165,18 @@ const UserFileController = {
         return res
           .status(HttpCode.NOT_FOUND)
           .json(
-            new FormatResponse(false, HttpCode.NOT_FOUND, `file ${id} does not exist`, null)
+            new FormatResponse(
+              false,
+              HttpCode.NOT_FOUND,
+              `file ${id} does not exist`,
+              null
+            )
           );
       }
     } catch (error) {
-      return res.status(HttpCode.BAD_REQUEST).json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
+      return res
+        .status(HttpCode.BAD_REQUEST)
+        .json(new FormatResponse(false, HttpCode.BAD_REQUEST, error, null));
     }
   }
 };

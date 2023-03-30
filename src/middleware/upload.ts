@@ -1,17 +1,27 @@
 import multer from 'multer';
+import * as path from 'path';
+import { Request } from 'express';
 
-const storage = multer.diskStorage({
-  filename: (req, file, cb) => {
-    const file_name = file.originalname;
+const uploadPath = path.resolve(__dirname, '../..', 'files');
 
-    cb(null, `${Date.now()}${file_name.replaceAll(' ', '_')}`);
+const storageFile: multer.StorageEngine = multer.diskStorage({
+  destination: uploadPath,
+  filename(
+    _req: Request,
+    file: Express.Multer.File,
+    fn: (error: Error | null, filename: string) => void
+  ): void {
+    fn(
+      null,
+      `${new Date().getTime().toString()}-${file.fieldname}${path.extname(
+        file.originalname
+      )}`
+    );
   }
 });
 
-
-const upload = multer({
-  storage,
-  limits: { fileSize: 500000 }
+const uploadFile = multer({
+  storage: storageFile,
 });
 
-export default upload;
+export { uploadFile };
