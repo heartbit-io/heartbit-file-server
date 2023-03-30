@@ -4,13 +4,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { routes } from './routes';
 import dbconnection from './util/dbconnection';
-import { log, error } from 'console';
+import { log } from 'console';
 import { HttpCode } from './util/httpCode';
+import logger from './util/logger';
 
 dotenv.config();
 
 if (!process.env.PORT) {
-  error('PORT is not set');
+  logger.error('Port is not set');
   process.exit(1);
 }
 
@@ -39,13 +40,16 @@ app.use(routes);
 
 // UnKnown Routes
 app.all('*', (req: Request, res: Response) => {
+  const message = `Route ${req.originalUrl} not found`;
+  logger.warn(message)
   return res.status(HttpCode.NOT_FOUND).json({
     status: false,
-    message: `Route ${req.originalUrl} not found`
+    message 
   });
 });
 
 app.listen(PORT, async () => {
   await dbconnection();
   log(`Listening on port ${PORT}`);
+  logger.info(`Listening on port ${PORT}`);
 });

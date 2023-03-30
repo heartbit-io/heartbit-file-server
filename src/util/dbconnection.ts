@@ -1,6 +1,7 @@
 import { log, error } from 'console';
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv';
+import logger from './logger';
 
 dotenv.config();
 
@@ -16,9 +17,9 @@ if (!db_url) {
 const dbconnection = async (): Promise<void> => {
   try {
       await mongoose.connect(db_url);
-      log('connected to database successfully');
+    log('connected to database successfully');
   } catch (error) {
-    log(error);
+    logger.error(error);
   }
 };
 

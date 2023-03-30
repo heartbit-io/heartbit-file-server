@@ -29,7 +29,7 @@ const UserFileController = {
           .status(HttpCode.BAD_REQUEST)
           .json(
             new FormatResponse(
-              true,
+              false,
               HttpCode.BAD_REQUEST,
               'Select file to upload',
               null
@@ -50,7 +50,7 @@ const UserFileController = {
           .status(HttpCode.BAD_REQUEST)
           .json(
             new FormatResponse(
-              true,
+              false,
               HttpCode.BAD_REQUEST,
               'Only images and pdf files are permitted with maximum file size of 1MB',
               null
