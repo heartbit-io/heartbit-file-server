@@ -5,19 +5,25 @@ import logger from './logger';
 
 dotenv.config();
 
-const db_url = process.env.DB_URL;
+if (!process.env.NODE_ENV) {
+  error('Please set environment');
+  process.exit(1);
+}
+
+const db_url = (process.env.NODE_ENV === 'test') ? process.env.TEST_DB_URL : process.env.DB_URL;
 
 mongoose.Promise = global.Promise;
 
 if (!db_url) {
-  error(`The database connection is not set`);
+  error(`Please set connections for both main and test databases`);
   process.exit(1);
 }
+
 
 const dbconnection = async (): Promise<void> => {
   try {
       await mongoose.connect(db_url);
-    log('connected to database successfully');
+    log(`connected to ${process.env.NODE_ENV} database successfully`);
   } catch (error) {
     logger.error(error);
   }

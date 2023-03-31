@@ -19,7 +19,7 @@ const validate =
       errors.array()
     );
 
-    return res.status(response.statusCode).json(response);
+    return res.status(response.status_code).json(response);
   };
 
 export default validate;

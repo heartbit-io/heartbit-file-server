@@ -1,4 +1,6 @@
 import express from 'express';
+import FormatResponse from '../lib/FormatResponse';
+import { HttpCode } from '../util/httpCode';
 
 const router = express.Router();
 
@@ -9,11 +11,18 @@ router.get('/', async (_req, res) => {
     timestamp: Date.now()
   };
   try {
-    res.send(healthcheck).status(200);
+    return res
+      .status(HttpCode.OK)
+      .json(
+        new FormatResponse(true, HttpCode.OK, 'Service available', healthcheck)
+      );
   } catch (error) {
-    res.status(503).send(error);
+    res
+      .status(HttpCode.SERVICE_UNAVAILABLE)
+      .json(
+        new FormatResponse(false, HttpCode.SERVICE_UNAVAILABLE, error, null)
+      );
   }
 });
 
-
-export { router as healthcheck }
+export { router as healthcheck };
