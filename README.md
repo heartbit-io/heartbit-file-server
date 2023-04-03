@@ -1,2 +1,2 @@
-# heartbit-wallet-server
-HeartBit wallet server
+# heartbit-file-server
+HeartBit file server
