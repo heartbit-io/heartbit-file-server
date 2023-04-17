@@ -1,3 +1,4 @@
+
 # heartbit-wallet-server
 HeartBit wallet server
 
@@ -63,5 +64,4 @@ We welcome contributors to the project. Please note that:
 ## License 📗
 
 [MIT License](./LICENSE) 
-
 
